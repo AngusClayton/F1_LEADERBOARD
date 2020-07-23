@@ -1,0 +1,12 @@
+{
+    "1": {"name": "Bob, Sarah and Will: The best of 6L", "class": "6L", "members": ["Bob", "Sarah", "Will"], "times": {"0": 1.69,"1595500795":1.420}, "fast": 1.420, "#": "1"},
+    "2": {"name": "Team 2", "class": "6L", "members": ["Rob", "Cal", "Nate"], "times": {"0": 1.5,"1595500795":1.29}, "fast": 1.29, "#": "2"},
+    "3": {"name": "Team 3", "class": "6L", "members": ["Rob2", "Cal2", "Nate2"], "times": {"0": 1.5,"1595500795":1.25}, "fast": 1.25, "#": "3"},
+    "4": {"name": "Team 4 doubt we will finish", "class": "6L", "members": ["Rob3", "Cal3", "Nate3"], "times": {"0": 1.5,"1595500795":1.20}, "fast": 1.20, "#": "4"},
+    "5": {"name": "Team 5", "class": "6T", "members": ["Robert", "Callum", "Nathan"], "times": {"0": 1.123,"1595500795":1.69696}, "fast": 1.123, "#": "5"}
+
+
+
+
+
+}

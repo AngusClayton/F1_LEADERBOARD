@@ -1,3 +1,6 @@
+### PRE URL:::
+preURL = '' #for reverse proxy use
+
 
 import json, time
 #HTML
@@ -65,17 +68,33 @@ def changeTeamRunTime(teamNo,runNo,time):
 	counter = 1
 	for i in runs:
 		if counter == runNo:
+			prevTime = i[1]
+			print("timeModified: ",i)
+			if prevTime == data[no]["fast"]:
+				data[no]["fast"] = time
 			hrRuns.update({i:time})
 		else:
 			hrRuns.update({i:runs[i]})
 		counter += 1
+	data[no]["times"] = hrRuns
+	#fastest
+	fastest = 999
+	for i in data[teamNo]["times"]:
+		if fastest > data[teamNo]["times"][i]:
+			fastest = data[teamNo]["times"][i]
+	data[teamNo]["fast"] = fastest
+
+
 	#save
 	if saveAllow:
-		data[no]["times"] = hrRuns
+	#	data[no]["times"] = hrRuns
 		save()
 	else:
 		print("NOSAVE")
 		return hrRuns
+
+
+
 ##this sub changes the details of a team
 ### NOTE: DOES NOT WORK WITH TIMES, changeTeamRunTime sub handles this!!
 def changeTeam(name,members,yrGroup,no):
@@ -119,17 +138,10 @@ def sortList(): #sort by fastest
     return out
 
 #Year Filters
-def FilterYear4():
+def yearFilter(term):
     out = []
     for i in sortList():
-        if '4' in i['class']:
-            out.append(i)
-    return out
-
-def FilterYear6():
-    out = []
-    for i in sortList():
-        if '6' in i['class']:
+        if term in i['class']:
             out.append(i)
     return out
 
@@ -143,6 +155,7 @@ def classFilter(yr):
 
 ### HTML TABLE RENDERER: (clist, title)
 def render(clist,yr):
+    
     output = "<h1>" + yr + " Leaderboard</h1>" + topTable
     counter = 1 #position
     for i in clist:
@@ -158,7 +171,7 @@ def render(clist,yr):
         #[{'name': 'VeryCool', 'class': '4L', 'members': ['name', '2'], 'times': {156666: 979}, 'fast': 979, '#': 2}
         output += "<td>" + str(counter) + "</td>"
         output += "<td>" + str(i['#']) + "</td>"
-        output += "<td> <a href='/leaderboard/team/" + str(i['#']) + "'>"+ str(i['name']) + "</a></td>"
+        output += "<td> <a href='" + preURL + "/team/" + str(i['#']) + "'>"+ str(i['name']) + "</a></td>"
         output += "<td>" + str(i['fast']) + "</td>"
         output += "<td>" + str(i['class']) + "</td>"
 

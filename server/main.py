@@ -1,10 +1,18 @@
 from flask import Flask,request
+from flask import send_file
 import dbi
 app = Flask(__name__)
+
+
+
 ##SET PASSWORD
 ## IF NO HTTPS; This should deffienetly be replaced by some rolling code like OAUTH 2FA
 def PSWD():
 	return 2365
+
+### PRE URL:::
+preURL = '' #for reverse proxy use
+
 
 ### MORE INFO TEMPLATE
 moreInfoHTML = """<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
@@ -62,7 +70,7 @@ css = """
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300&family=Exo:wght@300;800&display=swap');
 body{
-    background-color: black;
+    background-color: #111111;
     color: white;
     font-family: 'Exo', sans-serif;
     font-size:150%;
@@ -100,7 +108,7 @@ newEntryHTML = """<!DOCTYPE html>
 
 <h2>New Race Result Record:</h2>
 
-<form action="/leaderboard/submit" method="POST">
+<form action="$$$LEADERBOARD/submit" method="POST">
     <h1> Team Details</h1>
 
  <label for="lname">Team Number: (Must be exact!)</label><br>
@@ -121,13 +129,14 @@ newEntryHTML = """<!DOCTYPE html>
 </html>
 
 """
+newEntryHTML = newEntryHTML.replace("$$$LEADERBOARD",preURL)
 updateEntryHTML = """<!DOCTYPE html>
 <html>
 <body>
 
 <h2>Update Race Result Record:</h2>
 
-<form action="/leaderboard/updateEntrySubmit" method="POST">
+<form action="$$$LEADERBOARD/updateEntrySubmit" method="POST">
     <h1> Team Details</h1>
 
  <label for="lname">Team Number: (Must be exact!)</label><br>
@@ -152,13 +161,17 @@ updateEntryHTML = """<!DOCTYPE html>
 </html>
 
 """
+updateEntryHTML = updateEntryHTML.replace("$$$LEADERBOARD",preURL)
+
+
+
 newTeamHTML = """<!DOCTYPE html>
 <html>
 <body>
 
 <h2>New Team Registration:</h2>
 
-<form action="/leaderboard/NewTeamSubmit" method="POST">
+<form action="$$$LEADERBOARD/NewTeamSubmit" method="POST">
     <h1> Team Details</h1>
     <label for="lname">Team Name: </label><br>
   <input type="text" id="TeamNo" name="name" value="team awesome"><br><br>
@@ -187,6 +200,7 @@ newTeamHTML = """<!DOCTYPE html>
 </html>
 
 """
+newTeamHTML = newTeamHTML.replace("$$$LEADERBOARD",preURL)
 
 updateTeamHTML = """<!DOCTYPE html>
 <html>
@@ -194,7 +208,7 @@ updateTeamHTML = """<!DOCTYPE html>
 
 <h2>Update Team Information:</h2>
 <p1> check the existing stats first by opening the teamInfo page on the relevent class list. </p1>
-<form action="/leaderboard/updateTeamSubmit" method="POST">
+<form action="$$$LEADERBOARD/updateTeamSubmit" method="POST">
     <h1> Team Details</h1>
     <label for="lname">Team Name: </label><br>
   <input type="text" id="TeamNo" name="name" value="teamNAME"><br><br>
@@ -220,49 +234,82 @@ updateTeamHTML = """<!DOCTYPE html>
 </html>
 
 """
-
+updateTeamHTML = updateTeamHTML.replace("$$$LEADERBOARD",preURL)
 
 
 indexPage = css
 indexPage +="""
 <style>
-a {color:#a8e7ea;}
+a {color:#666688;}
 </style>
-<h1> F1 in Schools  Leaderboard </h1>
-<a href='/leaderboard/6'>  Year 6 Leaderboard </a><br>
-<a href='/leaderboard/4'>  Year 4 Leaderboard </a><br>
+
+<!--- CUSTOMISATION ZONE EDIT HERE --!>
+
+
+
+<h1> F1 in Schools Year Leaderboards: </h1>
+<!-- add/remove leaderboards here for wide filters (ie one term as in 6 shows 6W 6T 6L)
+
+copy the following format:
+    <a href='$$$LEADERBOARD/year/%TERM%/%TITLE%'>  %LINK DESCRIPTION </a><br>
+
+replace %TERM% with the filter term (i.e. 6 for all classes with the number 6 in them)
+replace %TITLE% with the DISPLAYED title of the leaderboard term 
+replace %LINK DESCRIPTION% with the DISPLAYED text for the link.
+
+--!>
+
+<a href='$$$LEADERBOARD/year/6/Year 6'>  Year 6 Leaderboard </a><br>
+<a href='$$$LEADERBOARD/year/4/Year 4'>  Year 4 Leaderboard </a><br>
+
+
+
+
 <h2> Class Leaderboards: </h2>
-<a href='/leaderboard/class/6W'>  6W Leaderboard </a><br>
-<a href='/leaderboard/class/6T'>  6T Leaderboard </a><br>
-<a href='/leaderboard/class/6L'>  6L Leaderboard </a><br>
+<!-- add/remove leaderboards here for wide filters (ie one term as in 6 shows 6W 6T 6L)
+
+copy the following format:
+    <a href='$$$LEADERBOARD/class/%CLASS%'>  %LINK DESCRIPTION </a><br>
+
+replace %CLASS% with the exact class name (i.e. 6W will only show entrys where class = 6W)
+replace %TITLE% with the DISPLAYED title of the leaderboard term 
+replace %LINK DESCRIPTION% with the DISPLAYED text for the link.
+
+--!>
+
+<a href='$$$LEADERBOARD/class/6W'>  6W Leaderboard </a><br>
+<a href='$$$LEADERBOARD/class/6T'>  6T Leaderboard </a><br>
+<a href='$$$LEADERBOARD/class/6L'>  6L Leaderboard </a><br>
 <br>
-<a href='/leaderboard/class/4W'>  4W Leaderboard </a><br>
-<a href='/leaderboard/class/4T'>  4T Leaderboard </a><br>
-<a href='/leaderboard/class/4L'>  4L Leaderboard </a><br>
+<a href='$$$LEADERBOARD/class/4W'>  4W Leaderboard </a><br>
+<a href='$$$LEADERBOARD/class/4T'>  4T Leaderboard </a><br>
+<a href='$$$LEADERBOARD/class/4L'>  4L Leaderboard </a><br>
+
+
+<!--- CUSTOMISATION ZONE ENDS! Don't edit any more unless you know what you are doing. --!>
+
+
 <h2> New Entry: </h2>
-<a href='/leaderboard/newEntry'>   Create New Time Entry </a><br>
-<a href='/leaderboard/newTeam'>  Add Team </a>
+<a href='$$$LEADERBOARD/newEntry'>   Create New Time Entry </a><br>
+<a href='$$$LEADERBOARD/newTeam'>  Add Team </a>
 <h2> Update Entries: </h2>
-<a href='/leaderboard/updateEntry'>   Edit Previous Time Entry </a><br>
-<a href='/leaderboard/updateTeam'>  Edit Team Information</a>
+<a href='$$$LEADERBOARD/updateEntry'>   Edit Previous Time Entry </a><br>
+<a href='$$$LEADERBOARD/updateTeam'>  Edit Team Information</a>
 """
+indexPage = indexPage.replace("$$$LEADERBOARD",preURL)
 
 ##VIEWING LISTS
-@app.route('/6')
-def sixList():
-    output = css
-    output += dbi.render(dbi.FilterYear6(),"Balsa")
-    return output
+
 
 @app.route('/')
 def index():
     return indexPage
 
 
-@app.route('/4')
-def fourList():
+@app.route('/year/<year>/<title>')
+def yearList(year,title):
     output = css
-    output += dbi.render(dbi.FilterYear4(),"Jaguar")
+    output += dbi.render(dbi.yearFilter(year),title)
     return output
 
 @app.route('/class/<Class>')
@@ -290,9 +337,9 @@ def submitEntry():
     if int(request.form["pswd"]) == PSWD():
         dbi.newEntry(request.form["TeamNo"],request.form["Time"])
         dbi.save()
-        return 'Thankyou Click <a href="/leaderboard/newEntry"> Here </a> To go record another or: <a href="/leaderboard/"> Here for main menu</a> '
+        return 'Thankyou Click <a href="'+ preURL + '/newEntry"> Here </a> To go record another or: <a href="'+ preURL + '/"> Here for main menu</a> '
     else:
-        return 'Wrong Password! <a href="/leaderboard/newEntry"> Here </a> To go try again'
+        return 'Wrong Password! <a href="'+ preURL + '/newEntry"> Here </a> To go try again'
 
 @app.route('/NewTeamSubmit',methods=["POST"])
 def newTeamForm():
@@ -303,9 +350,9 @@ def newTeamForm():
             outMembers.append(i.strip())
         dbi.newTeam(request.form["name"],outMembers,request.form["yrGroup"],request.form["teamNo"],request.form["time"])
         dbi.save()
-        return 'Thankyou Click <a href="/leaderboard/NewTeamSubmit"> Here </a> To go record another or: <a href="/leaderboard"> Here for main menu</a> '
+        return 'Thankyou Click <a href="'+ preURL + '/NewTeamSubmit"> Here </a> To go record another or: <a href="'+ preURL + '"> Here for main menu</a> '
     else:
-        return 'Wrong Password! <a href="/leaderboard/newEntry"> Here </a> To go try again'
+        return 'Wrong Password! <a href="'+ preURL + '/newEntry"> Here </a> To go try again'
 ####UPDATEING TEAMS
 #updateing Times:
 #times
@@ -329,9 +376,9 @@ def updateEntryForm():
     if int(request.form["pswd"]) == PSWD():
         print(dbi.changeTeamRunTime(request.form["TeamNo"],request.form["Entry"],request.form["Time"]))
         dbi.save()
-        return 'Click<a href="/leaderboard/"> Here for main menu</a> '
+        return 'Click<a href="'+ preURL + '/"> Here for main menu</a> '
     else:
-        return 'Wrong Password! <a href="/leaderboard/updateEntry"> Here </a> To go try again'
+        return 'Wrong Password! <a href="'+ preURL + '/updateEntry"> Here </a> To go try again'
 #ew backend stuff for updating team stat /details
 @app.route('/updateTeamSubmit',methods=["POST"])
 def updateTeamForm():
@@ -342,9 +389,9 @@ def updateTeamForm():
             outMembers.append(i.strip())
         dbi.changeTeam(request.form["name"],outMembers,request.form["yrGroup"],request.form["teamNo"])
         dbi.save()
-        return 'Thankyou Click <a href="/leaderboard"> Here for main menu</a> '
+        return 'Thankyou Click <a href="'+ preURL + '"> Here for main menu</a> '
     else:
-        return 'Wrong Password! <a href="/leaderboard/updateEntry"> Here </a> To go try again'
+        return 'Wrong Password! <a href="'+ preURL + '/updateEntry"> Here </a> To go try again'
 
 
 ### DEEEP INFO ON TEAMS
@@ -373,6 +420,14 @@ def moreInfo(teamNo):
 
 
     return output
+
+######## SEND IMAGES:
+@app.route('/get_image/<name>')
+def get_image(name):
+    name = "img/"  + name
+    return send_file(name, mimetype='image/gif')
+
+
 
 
 if __name__ == '__main__':
