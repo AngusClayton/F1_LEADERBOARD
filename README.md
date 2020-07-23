@@ -8,10 +8,11 @@ The flask API powered server that serves as the front/backend of the leader boar
 
 In future this will also server backend for the race timer.
 
-[Read More](https://github.com/Happypig123123/F1_LEADERBOARD/server/README.MD)
+[Read More](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/server/README.md)
 
 ## Race Timer Arduino
 
 A IOT F1 race timer, connected to the cloud. As of right now is not connected to the F1_Leader board system.
 
-[Read More](https://github.com/Happypig123123/F1_LEADERBOARD/raceTimerArduino/README.MD)
+[Read More](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/raceTimerArduino/README.md)
+
