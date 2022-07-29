@@ -1,7 +1,12 @@
 # F1_LEADERBOARD SYSTEM
 
 A intuitive leader board system designed for in school use, sorting times by class and year group.
+# UI
+![Screen](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/figures/1.png?raw=true)
 
+![Screen](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/figures/2.png?raw=true)
+
+![Screen](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/figures/3.png?raw=true)
 ## Server
 
 The flask API powered server that serves as the front/backend of the leader board.
