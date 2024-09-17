@@ -19,17 +19,13 @@
     </div>
     
     <h1> F1 in Schools <i>Practice</i> Leaderboard </h1>
-    <a href='/6'>  Year 6 Leaderboard </a><br>
-    <a href='/4'>  Year 4 Leaderboard </a><br>
+    {% for group in groups %}
+    <a href='/leaderboard/{{group}}'>  Year {{group}} Leaderboard </a><br>
+    {% endfor %}
     <h2> Class Leaderboards: </h2>
-    <a href='/class/6J'>  6J Leaderboard </a><br>
-    <a href='/class/6W'>  6W Leaderboard </a><br>
-    <a href='/class/6T'>  6T Leaderboard </a><br>
-    <a href='/class/6L'>  6L Leaderboard </a><br>
-    <br>
-    <a href='/class/4W'>  4W Leaderboard </a><br>
-    <a href='/class/4T'>  4T Leaderboard </a><br>
-    <a href='/class/4L'>  4L Leaderboard </a><br>
+    {% for group in classes %}
+    <a href='/leaderboard/{{group}}'> {{group}} Leaderboard </a><br>
+    {% endfor %}
     <h2> New Entry: </h2>
     <a href='/newEntry'>   Create New Time Entry </a><br>
     <a href='/newTeam'>  Add Team </a>

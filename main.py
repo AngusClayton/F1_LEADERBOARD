@@ -49,7 +49,8 @@ def getFastestTime(teamNo):
     if result == None:
         return 999
     return result['fastest_time']
-
+#preconditions: filter e.g. 4W or 5W, or 5 for all 5th years
+#postconditions: returns a list of teams with their fastest times
 def getLeaderboard(filter):
     # wild card, return whole DB
     if filter == '*':
@@ -67,6 +68,23 @@ def getLeaderboard(filter):
     teams = cursor.fetchall()
     conn.close()
     return teams
+
+#preconditions: none
+#postconditions: returns all distinct classes in table
+def getClasses():
+    conn, cursor = get_db_connection()
+    cursor.execute('''
+    SELECT DISTINCT class
+    FROM teams
+    ORDER BY class;
+    ''')
+    classes = cursor.fetchall()
+    conn.close()
+
+    if classes == None:
+        return []
+
+    return set(item['class'] for item in classes)
 
 # ============== API METHODS ============
 # create flask app
@@ -89,7 +107,14 @@ def leaderboard(filter):
 ## Index page
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # determine what links to present
+    classes = getClasses()
+    groups = []
+    for i in classes:
+        if i[0] not in groups:
+            groups.append(i[0])
+    
+    return render_template('index.html', classes=classes, groups=groups)
 
 
 ##### ADDING NEW DATA
@@ -103,9 +128,7 @@ def newEntry():
 #teams
 @app.route('/newTeam')
 def newTeam():
-    out = css
-    out += newTeamHTML
-    return out
+    return render_template('newTeam.html')
 #eww backend stuff for new data
 @app.route('/submit',methods=["POST"])
 def submitEntry():
