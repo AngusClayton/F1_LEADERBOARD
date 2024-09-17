@@ -16,21 +16,43 @@ app = Flask(__name__)
 def PSWD():
 	return 2365
 
+#preconditions: teamNo
+#postconditions: returns team data
 def getTeam(teamNo):
-    #if teamNo in dbi.data:
-    #    return dbi.data[teamNo]
-    #return None
     conn, cursor = get_db_connection()
     cursor.execute("SELECT * FROM teams WHERE id = ?", (teamNo,))
     team = cursor.fetchone() 
+    conn.close()
     return team
 
+#preconditions: teamNo
+#postconditions: returns all times for a team; sorted chronologically
 def getTeamTimes(teamNo):
     conn, cursor = get_db_connection()
     cursor.execute("SELECT * FROM times WHERE team_id = ? ORDER BY id", (teamNo,))
     
     times = cursor.fetchall()
+    conn.close()
     return times
+
+#preconditions: teamNo
+#postconditions: returns the fastest time for a team
+def getFastestTime(teamNo):
+    conn, cursor = get_db_connection()
+    cursor.execute('''
+        SELECT MIN(time_record) AS fastest_time
+        FROM times
+        WHERE team_id = ?
+    ''', (teamNo,))
+    result = cursor.fetchone()
+    conn.close()
+    if result == None:
+        return 999
+    return result['fastest_time']
+
+
+
+
 
 ##Main list view
 @app.route('/leaderboard/<filter>')
@@ -123,23 +145,21 @@ def updateTeamForm():
 ### DEEEP INFO ON TEAMS
 @app.route('/team/<teamNo>')
 def moreInfo(teamNo):
+    # get team from db
     record = getTeam(teamNo)
+    # if team invalid; error and redirect
     if record == None:
         return render_template('error.html', message="Team not found")
     members = record['members']
-    ##TIMES
+
+    # calculate graph
     timeList = []
     labelList = []
-    
-    print(getTeamTimes(teamNo))
     for i in getTeamTimes(teamNo):
         timeList.append(i['time_record'])
         labelList.append(i['id'])
-   
-
-
-
-    return render_template('moreInfo.html', number=str(teamNo), name=record['name'].title(), members=members, tclass=record['class'], fastest = str(record['fast_time']), chartLabels=str(labelList), chartTimes=str(timeList))
+    # render and return
+    return render_template('moreInfo.html', number=str(teamNo), name=record['name'].title(), members=members, tclass=record['class'], fastest = getFastestTime(teamNo), chartLabels=str(labelList), chartTimes=str(timeList))
 
 
 if __name__ == '__main__':
