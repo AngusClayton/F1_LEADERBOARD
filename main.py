@@ -90,7 +90,6 @@ def getClasses():
 # create flask app
 app = Flask(__name__)
 
-
 ## Main List View
 @app.route('/leaderboard/<filter>')
 def leaderboard(filter):
@@ -116,83 +115,7 @@ def index():
     
     return render_template('index.html', classes=classes, groups=groups)
 
-
-##### ADDING NEW DATA
-#times
-@app.route('/newEntry')
-def newEntry():
-    out = css
-    out += newEntryHTML
-    return out
-
-#teams
-@app.route('/newTeam')
-def newTeam():
-    return render_template('newTeam.html')
-#eww backend stuff for new data
-@app.route('/submit',methods=["POST"])
-def submitEntry():
-    if int(request.form["pswd"]) == PSWD():
-        dbi.newEntry(request.form["TeamNo"],request.form["Time"])
-        dbi.save()
-        return 'Thankyou Click <a href="/leaderboard/newEntry"> Here </a> To go record another or: <a href="/leaderboard/"> Here for main menu</a> '
-    else:
-        return 'Wrong Password! <a href="/leaderboard/newEntry"> Here </a> To go try again'
-
-@app.route('/NewTeamSubmit',methods=["POST"])
-def newTeamForm():
-    if int(request.form["pswd"]) == PSWD():
-        members = request.form["members"].split(",")
-        outMembers = []
-        for i in members:
-            outMembers.append(i.strip())
-        dbi.newTeam(request.form["name"],outMembers,request.form["yrGroup"],request.form["teamNo"],request.form["time"])
-        dbi.save()
-        return 'Thankyou Click <a href="/leaderboard/NewTeamSubmit"> Here </a> To go record another or: <a href="/leaderboard"> Here for main menu</a> '
-    else:
-        return 'Wrong Password! <a href="/leaderboard/newEntry"> Here </a> To go try again'
-####UPDATEING TEAMS
-#updateing Times:
-#times
-@app.route('/updateEntry')
-def updateEntry():
-    out = css
-    out += updateEntryHTML
-    return out
-##updating team stat:
-@app.route('/updateTeam')
-def updateTeam():
-    out = css
-    out += updateTeamHTML
-    return out
-
-
-#ew backend stuff for updating times:
-@app.route('/updateEntrySubmit',methods=["POST"])
-def updateEntryForm():
-    #changeTeamRunTime(teamNo,RunNo,time)
-    if int(request.form["pswd"]) == PSWD():
-        print(dbi.changeTeamRunTime(request.form["TeamNo"],request.form["Entry"],request.form["Time"]))
-        dbi.save()
-        return 'Click<a href="/leaderboard/"> Here for main menu</a> '
-    else:
-        return 'Wrong Password! <a href="/leaderboard/updateEntry"> Here </a> To go try again'
-#ew backend stuff for updating team stat /details
-@app.route('/updateTeamSubmit',methods=["POST"])
-def updateTeamForm():
-    if int(request.form["pswd"]) == PSWD():
-        members = request.form["members"].split(",")
-        outMembers = []
-        for i in members:
-            outMembers.append(i.strip())
-        dbi.changeTeam(request.form["name"],outMembers,request.form["yrGroup"],request.form["teamNo"])
-        dbi.save()
-        return 'Thankyou Click <a href="/leaderboard"> Here for main menu</a> '
-    else:
-        return 'Wrong Password! <a href="/leaderboard/updateEntry"> Here </a> To go try again'
-
-
-### DEEEP INFO ON TEAMS
+### Team Info Page
 @app.route('/team/<teamNo>')
 def moreInfo(teamNo):
     # get team from db
