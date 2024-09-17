@@ -38,11 +38,16 @@
             <td>{{team.name}}</td>
             <td>{{team.members}}</td>
             <td>{{team.class}}</td>
-            <td><button type="button" onclick="editTeam({{team.number}})">Edit</button></td>
+            <td><button type="button" onclick="editTeam({{team.id}})">Edit</button></td>
         </tr>
         {% endfor %}
     </table>
     <script>
+        function editTeam(teamNumber) {
+            window.location.href = '/editTeam/' + teamNumber;
+        }
+
+
         document.getElementById('filterInput').addEventListener('keyup', function() {
             let filterValue = this.value.toUpperCase();
             let table = document.getElementById('myTable');
