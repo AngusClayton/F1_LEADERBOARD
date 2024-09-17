@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Leaderboard</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+      a {
+        color: white; /* blue colors for links too */
+        text-decoration: underline; /* no underline */
+      }
+
+
+</style>
+</head>
+<body>
+<h1> {{ year }} Leaderboard</h1>
+  <table style='width:100%'>
+    <colgroup>
+      <col " width="10%">
+      <col width="10%">
+      <col  width="40%">
+      <col  width="20%">
+      <col  width="10%">
+    </colgroup>
+      
+      
+    <tr>
+      <th>#</th>
+      <th>Team No</th>
+      <th>Team Name</th>
+      <th>Time</th>
+      <th>Class</th>
+    </tr>
+
+    {{ tableContent | safe}}
+  </table>
+</body>
+</html>
