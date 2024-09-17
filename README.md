@@ -1,23 +1,25 @@
 # F1_LEADERBOARD SYSTEM
 
-A intuitive leader board system designed for in school use, sorting times by class and year group.
-# UI
-![Screen](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/figures/1.png?raw=true)
+# Database
+SQL database utalizing sqlite3
+```
+CREATE TABLE teams (
+    id INTEGER PRIMARY KEY,    -- Corresponds to the "#" in the JSON
+    name VARCHAR(255),         -- Team name
+    class VARCHAR(10),         -- Class (e.g., "6L", "3W")
+    members VARCHAR(255),       -- Team members (CSV) 
+    fast_time FLOAT            -- Fastest time (e.g., "fast" in the JSON)
+);
 
-![Screen](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/figures/2.png?raw=true)
-
-![Screen](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/figures/3.png?raw=true)
-## Server
-
-The flask API powered server that serves as the front/backend of the leader board.
-
-In future this will also server backend for the race timer.
-
-[Read More](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/server/README.md)
-
-## Race Timer Arduino
-
-A IOT F1 race timer, connected to the cloud. As of right now is not connected to the F1_Leader board system.
-
-[Read More](https://github.com/Happypig123123/F1_LEADERBOARD/blob/master/raceTimerArduino/README.md)
-
+CREATE TABLE times (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    team_id INTEGER,           -- Foreign key linking to the 'teams' table
+    time_record FLOAT,         -- The recorded time (e.g., 999.0)
+    FOREIGN KEY (team_id) REFERENCES teams(id)
+);
+```
+## Example data
+```
+INSERT INTO teams (id, name, class, fast_time, members) 
+VALUES (5, 'team 5', '3W', 999.0, 'Angus, Brian');
+```

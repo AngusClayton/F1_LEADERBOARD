@@ -1,5 +1,15 @@
 from flask import Flask, request, render_template
+import sqlite3
 import dbi
+# create db connection
+
+def get_db_connection():
+    conn = sqlite3.connect('test.db')
+    conn.row_factory = sqlite3.Row  # Set row_factory to sqlite3.Row
+    cursor = conn.cursor()
+    return conn, cursor
+
+# create flask app
 app = Flask(__name__)
 ##SET PASSWORD
 ## IF NO HTTPS; This should deffienetly be replaced by some rolling code like OAUTH 2FA
@@ -7,9 +17,13 @@ def PSWD():
 	return 2365
 
 def getTeam(teamNo):
-    if teamNo in dbi.data:
-        return dbi.data[teamNo]
-    return None
+    #if teamNo in dbi.data:
+    #    return dbi.data[teamNo]
+    #return None
+    conn, cursor = get_db_connection()
+    cursor.execute("SELECT * FROM teams WHERE id = ?", (teamNo,))
+    team = cursor.fetchone() 
+    return team
 
 ##Main list view
 @app.route('/leaderboard/<filter>')
