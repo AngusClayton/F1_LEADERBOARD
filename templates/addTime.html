@@ -1,0 +1,110 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Add Time | F1 </title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            a {color:#666688;}
+            
+        </style>
+    </head>
+<body>
+    <h1>Add Time Page</h1>
+    <p>Note: If you wish you may not enter values for the second lane. </p>
+    <form id="myForm">
+        <div class="container">
+            <div class="lane">
+                <h2> Lane 1: </h2>
+                <label for="teamNumber">Team Number: </label><br>
+                <input type="number" id="teamNumber1" name="name" placeholder="team awesome"><br><br>
+
+                <label for="teamTime">Time: </label><br>
+                <input type="number" step="any" id="teamTime1" name="name" placeholder="1.353"><br><br>
+            </div>
+            <div class="lane"></div>
+                <h2> Lane 2: </h2>
+                <label for="teamNumber">Team Number: </label><br>
+                <input type="number" id="teamNumber2" name="name" placeholder="team awesome"><br><br>
+
+                <label for="teamTime">Time: </label><br>
+                <input type="number" step="any" id="teamTime2" name="name" placeholder="1.454"><br><br>
+            </div>
+
+        </div>
+        <h2>Password:</h2>
+        <label for="password">Password</label><br>
+        <input type="password" id="password" ><br><br>
+
+       
+        <button type="button" onclick="submitForm(false)">Submit Lane 1</button>
+        <button type="button" onclick="submitForm(true)">Submit Both Lanes</button>
+    </form>
+
+    <script type="text/javascript">
+    function submitForm(both){
+        var form = document.getElementById('myForm');
+
+        // Extract form values
+        var pswd = document.getElementById('password').value;
+
+        var team1Number = document.getElementById('teamNumber1').value;
+        var team1Time = document.getElementById('teamTime1').value;
+
+        var team2Number = document.getElementById('teamNumber2').value;
+        var team2Time = document.getElementById('teamTime2').value;
+
+
+
+        // Validate form values (lane1)
+        if (!team1Number || !team1Time) {
+            alert('Please fill out all fields.');
+            return;
+        }
+
+        // Validate form values (lane2)
+        if (both && (!team2Number || !team2Time)) {
+            alert('Please fill out all fields.');
+            return;
+        }
+
+        
+        //send request
+        submitTime({'team': team1Number, 'time': team1Time, 'pswd': pswd});
+        if (both) submitTime({'team': team2Number, 'time': team2Time, 'pswd': pswd});
+
+        
+    }
+
+    function submitTime(data){
+        fetch('/addTime', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+        // Check the status code
+        if (response.ok) {
+            // Status code in the range 200-299
+            alert("Time Added successfully");
+            
+        } else if (response.status === 404) {
+            alert("Error. Team does not exist. (check team no)")
+        }
+        else if (response.status === 400) {
+            alert("Error. Form data is invalid.")
+        }
+    
+        else if (response.status === 401) {
+            alert("Error. Incorrect password.")
+        }
+         else {
+            // Handle other status codes
+            alert("Unexpected error. Please try again.")
+        }
+    })
+    }
+    </script>
+    
+</body>

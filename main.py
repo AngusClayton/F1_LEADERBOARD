@@ -149,11 +149,15 @@ def moreInfo(teamNo):
     # render and return
     return render_template('moreInfo.html', number=str(teamNo), name=record['name'].title(), members=members, tclass=record['class'], fastest = getFastestTime(teamNo), chartLabels=str(labelList), chartTimes=str(timeList))
 
-### Edit All PAge
+### Add Team Page
 @app.route('/addTeam')
 def admin():
     return render_template('addTeam.html')
 
+## Add Time Page
+@app.route('/addTime')
+def addTime():
+    return render_template('addTime.html') 
 
 ##======== API METHODS
 @app.route('/submitTeam', methods=['POST'])
@@ -194,6 +198,36 @@ def submitTeam():
     
     return Response(status=200)
 
+
+@app.route('/addTime', methods=['POST'])
+def addTimeAPI():
+    # get form data
+    data = request.get_json()
+    print(data)
+    # check if team  exists:
+    if teamExists(data['team']) == False:
+        return Response(status=404) # conflict status
+
+    # check password
+    if data['pswd'] != PSWD():
+        return Response(status=401)
+    
+    # attempt add
+    try:
+        conn, cursor = get_db_connection()
+        # insert team
+        cursor.execute('INSERT INTO times (team_id, time_record) VALUES (?, ?)', 
+                    (data['team'], data['time']))
+        
+        conn.commit() # save to db
+
+    except Exception as e:
+        print("Exception whilst inserting time into DB")
+        print(e)
+        return Response(status=500)
+    
+    return Response(status=200)
+    
 
 if __name__ == '__main__':
     app.run(host='localhost',port='8000',debug=True)
