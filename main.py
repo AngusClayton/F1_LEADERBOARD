@@ -25,6 +25,13 @@ def getTeam(teamNo):
     team = cursor.fetchone() 
     return team
 
+def getTeamTimes(teamNo):
+    conn, cursor = get_db_connection()
+    cursor.execute("SELECT * FROM times WHERE team_id = ? ORDER BY id", (teamNo,))
+    
+    times = cursor.fetchall()
+    return times
+
 ##Main list view
 @app.route('/leaderboard/<filter>')
 def leaderboard(filter):
@@ -119,20 +126,20 @@ def moreInfo(teamNo):
     record = getTeam(teamNo)
     if record == None:
         return render_template('error.html', message="Team not found")
-    members = ", ".join(record['members'])
+    members = record['members']
     ##TIMES
     timeList = []
     labelList = []
-    counter = 1
-    for i in record['times']:
-        timeList.append(record['times'][i])
-        labelList.append(counter)
-        counter += 1
+    
+    print(getTeamTimes(teamNo))
+    for i in getTeamTimes(teamNo):
+        timeList.append(i['time_record'])
+        labelList.append(i['id'])
    
 
 
 
-    return render_template('moreInfo.html', name=record['name'], members=members, tclass=record['class'], fastest = str(record['fast']), chartLabels=str(labelList), chartTimes=str(timeList))
+    return render_template('moreInfo.html', number=str(teamNo), name=record['name'].title(), members=members, tclass=record['class'], fastest = str(record['fast_time']), chartLabels=str(labelList), chartTimes=str(timeList))
 
 
 if __name__ == '__main__':

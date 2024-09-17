@@ -22,4 +22,6 @@ CREATE TABLE times (
 ```
 INSERT INTO teams (id, name, class, fast_time, members) 
 VALUES (5, 'team 5', '3W', 999.0, 'Angus, Brian');
+
+INSERT INTO times (team_id, time_record) VALUES (5, 2.543), (5,2.2341), (5,2.644), (5,2.24), (5,1.53);
 ```
