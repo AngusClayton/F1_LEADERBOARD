@@ -1,44 +1,55 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
-<style>
-.cc {
-    height:40vh;
-}
-.sub {
-    color:yellow;
-}
-</style>
 
-<h1> ###NAME <span class="sub">####TEAMNO</span></h1>
-Class: <span class = "SUB"> ###CLASS </span>
-<h2>Members:</h2><span class="sub">
-###MEMBERS</span>
-<h2>Best Time: <u class='sub'>###FASTESTs</u></h2>
-<h2>Race History </h2>
-In Milliseconds, Lower is better. Hover over points to see times. <br>
-<div class="cc">
-<canvas id="myChart"></canvas></div>
-<script>
-var ctx = document.getElementById('myChart').getContext('2d');
-var chart = new Chart(ctx, {
-    // The type of chart we want to create
-    type: 'line',
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Team {{ number }} </title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            .cc {
+                height:40vh;
+            }
+            .sub {
+                color:yellow;
+            }
+        </style>
+    </head>
+    <body>
 
-    // The data for our dataset
-    data: {
-        labels: ###LABLES_LIST,
-        datasets: [{
-            label: 'Times',
-            borderColor: 'rgb(255, 255, 0)',
-            data: ###TIMES_LIST
-        }]
-    },
+        <h1> {{name}} <span class="sub">{{ number }}</span></h1>
+        Class: <span class = "SUB"> {{ tclass }} </span>
+        <h2>Members:</h2><span class="sub">
+        {{members}}</span>
+        <h2>Best Time: <u class='sub'>{{fastest}}</u></h2>
+        <h2>Race History </h2>
+        In Milliseconds, Lower is better. Hover over points to see times. <br>
+        <div class="cc">
+        <canvas id="myChart"></canvas></div>
+        
+    </body>
+    <script>
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'line',
 
-    // Configuration options go here
-    options: {
-         responsive: true,
-        maintainAspectRatio: false,
+            // The data for our dataset
+            data: {
+                labels: {{chartLabels | safe}},
+                datasets: [{
+                    label: 'Times',
+                    borderColor: 'rgb(255, 255, 0)',
+                    data: {{chartTimes | safe}}
+                }]
+            },
 
-    }
-});
+            // Configuration options go here
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
 
-</script>
+            }
+        });
+
+    </script>
+</html>
