@@ -159,7 +159,18 @@ def admin():
 def addTime():
     return render_template('addTime.html') 
 
+@app.route('/editTeam')
+def editTeam():
+    # get all teams
+    conn, cursor = get_db_connection()
+    cursor.execute("SELECT * FROM teams")
+    teams = cursor.fetchall() 
+    #print(teams)
+    conn.close()
+    return render_template('editTeam.html', teams = teams) 
+
 ##======== API METHODS
+# add a new team
 @app.route('/submitTeam', methods=['POST'])
 def submitTeam():
     # get form data
@@ -198,7 +209,7 @@ def submitTeam():
     
     return Response(status=200)
 
-
+# edit a time
 @app.route('/addTime', methods=['POST'])
 def addTimeAPI():
     # get form data

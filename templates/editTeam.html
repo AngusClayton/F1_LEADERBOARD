@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Edit Teams | F1</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            a {color:#666688;}
+            input[type="text"] {
+                width: 100%;
+                padding: 12px 20px;
+                margin: 8px 0;
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+<body>
+    <h1>Edit Teams:</h1>
+    <label >Search table by team name, id, members, class, etc:</label><br>
+    <input class='search' type="text" id="filterInput" placeholder="Filter table by keyword...">
+    <table id="myTable">
+        <colgroup>
+            <col " width="10%">
+            
+            <col  width="40%">
+            <col  width="30%">
+            
+          </colgroup>
+        <tr>
+            <th>Team Number</th>
+            <th>Team Name</th>
+            <th>Members</th>
+            <th>Class</th>
+            <th></th>
+        </tr>
+        {% for team in teams %}
+        <tr>
+            <td>{{team.id}}</td>
+            <td>{{team.name}}</td>
+            <td>{{team.members}}</td>
+            <td>{{team.class}}</td>
+            <td><button type="button" onclick="editTeam({{team.number}})">Edit</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <script>
+        document.getElementById('filterInput').addEventListener('keyup', function() {
+            let filterValue = this.value.toUpperCase();
+            let table = document.getElementById('myTable');
+            let rows = table.getElementsByTagName('tr');
+    
+            // Loop through all table rows (except for the first one which contains table headers)
+            for (let i = 1; i < rows.length; i++) {
+                let row = rows[i];
+                let cells = row.getElementsByTagName('td');
+                let matchFound = false;
+    
+                // Loop through each cell in the row
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].textContent.toUpperCase().includes(filterValue)) {
+                        matchFound = true;
+                        break;
+                    }
+                }
+    
+                // Show/hide the row based on whether it matches the filter
+                row.style.display = matchFound ? '' : 'none';
+            }
+        });
+    </script>
+</body>
