@@ -3,16 +3,30 @@
 <head>
     <title>Leaderboard</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
       a {
         color: white; /* blue colors for links too */
         text-decoration: underline; /* no underline */
       }
+      .home-icon {
+            position: fixed; 
+            top: 10px;       /* Distance from the top */
+            right: 10px;     /* Distance from the right */
+           
+            z-index: 100;   /* Ensures it stays on top of other elements */
+            }
+            a:hover {
+                color: yellow;
+            }
 
 
 </style>
 </head>
 <body>
+  <a href="/" class="home-icon">
+    <i class="fas fa-home"></i>
+</a>
 <h1> {{ desc }} Leaderboard</h1>
   <table style='width:100%'>
     <thead>

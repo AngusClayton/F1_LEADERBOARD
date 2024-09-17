@@ -3,6 +3,8 @@
     <head>
         <title>Edit Teams | F1</title>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
         <style>
             a {color:#666688;}
             input[type="text"] {
@@ -11,9 +13,22 @@
                 margin: 8px 0;
                 box-sizing: border-box;
             }
+            .home-icon {
+            position: fixed; 
+            top: 10px;       /* Distance from the top */
+            right: 10px;     /* Distance from the right */
+           
+            z-index: 100;   /* Ensures it stays on top of other elements */
+            }
+            a:hover {
+                color: #fff;
+            }
         </style>
     </head>
 <body>
+    <a href="/" class="home-icon">
+        <i class="fas fa-home"></i>
+    </a>
     <h1>Edit Teams:</h1>
     <label >Search table by team name, id, members, class, etc:</label><br>
     <input class='search' type="text" id="filterInput" placeholder="Filter table by keyword...">
