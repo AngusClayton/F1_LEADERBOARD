@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, Response
 import sqlite3
 import dbi
+import traceback
 
 
 # create db connection
@@ -143,9 +144,11 @@ def moreInfo(teamNo):
     # calculate graph
     timeList = []
     labelList = []
+    count = 1
     for i in getTeamTimes(teamNo):
         timeList.append(i['time_record'])
-        labelList.append(i['id'])
+        labelList.append(count)
+        count+=1
     # render and return
     return render_template('moreInfo.html', number=str(teamNo), name=record['name'].title(), members=members, tclass=record['class'], fastest = getFastestTime(teamNo), chartLabels=str(labelList), chartTimes=str(timeList))
 
@@ -159,7 +162,9 @@ def admin():
 def addTime():
     return render_template('addTime.html') 
 
-@app.route('/editTeam')
+# edit team page
+# lists all teams; then you can hit edit
+@app.route('/editTeam', methods=['GET'])
 def editTeam():
     # get all teams
     conn, cursor = get_db_connection()
@@ -168,6 +173,23 @@ def editTeam():
     #print(teams)
     conn.close()
     return render_template('editTeam.html', teams = teams) 
+
+# edit team page
+# has details of a specific team
+@app.route('/editTeam/<teamNo>')
+def editTeamPage(teamNo):
+    # get team from db
+    team = getTeam(teamNo)
+    times = getTeamTimes(teamNo)
+    #print(dict(team))
+    #for t in times:
+    #    print(dict(t))
+    # if team invalid; error and redirect
+    if team == None:
+        return render_template('error.html', message="Team not found")
+   
+    return render_template('editATeam.html', team=team, times=times)
+
 
 ##======== API METHODS
 # add a new team
@@ -209,7 +231,7 @@ def submitTeam():
     
     return Response(status=200)
 
-# edit a time
+# add a time
 @app.route('/addTime', methods=['POST'])
 def addTimeAPI():
     # get form data
@@ -238,7 +260,57 @@ def addTimeAPI():
         return Response(status=500)
     
     return Response(status=200)
+
+# edit a team
+@app.route('/editTeam', methods=['POST'])
+def editTeamSubmit():   
+    data = request.get_json()
+
+    # check if team  exists:
+    if teamExists(data['teamID']) == False:
+        return Response(status=404) # conflict status
+
+    # check password
+    if data['pswd'] != PSWD():
+        return Response(status=401)
     
+    # clean data
+    members = data['teamMembers'].split(", ")
+    members = [i.strip().title() for i in members]
+    members = ', '.join(members)
+    
+
+    # try update team table:
+    try:
+        conn, cursor = get_db_connection()
+        # insert team
+        cursor.execute('UPDATE teams SET name = ?, members = ?, class = ? WHERE id = ?', 
+                    (data['teamName'].title().strip(), members, data['teamClass'].strip().upper(), data['teamID']))
+        
+        conn.commit()
+    except Exception as e:
+        print("Exception whilst updating team in DB")
+        print(e)
+        return Response(status=500)
+    
+    # try update times table
+    try:
+        # delete all times
+        cursor.execute('DELETE FROM times WHERE team_id = ?', (data['teamID'],))
+        conn.commit()
+        # add back in times
+        for i in data['timeRecords']:
+            if float(i) > 0:
+                cursor.execute('INSERT INTO times (team_id, time_record) VALUES (?, ?)', 
+                        (data['teamID'], i))
+                conn.commit()
+    except Exception as e:
+        print("Exception whilst updating times in DB")
+        print(e)
+        traceback.print_exc()
+        return Response(status=500)
+
+    return Response(status=200)
 
 if __name__ == '__main__':
     app.run(host='localhost',port='8000',debug=True)
