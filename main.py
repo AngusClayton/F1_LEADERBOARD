@@ -1,4 +1,4 @@
-from flask import Flask,request
+from flask import Flask, request, render_template
 import dbi
 app = Flask(__name__)
 ##SET PASSWORD
@@ -267,7 +267,7 @@ def sixList():
 
 @app.route('/')
 def index():
-    return indexPage
+    return render_template('index.html')
 
 
 @app.route('/4')

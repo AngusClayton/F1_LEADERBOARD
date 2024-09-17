@@ -30,3 +30,7 @@ th, td {
     color:#cd7f32;
     background-color:#261b10;
 }
+img {
+    width: 25vw;
+    height: auto;
+}
