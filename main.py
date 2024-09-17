@@ -80,6 +80,8 @@ def leaderboard(filter):
     filterDesc = None
     if filter.isnumeric():
         filterDesc = "Year " + filter
+    elif filter=="*":
+        filterDesc = "All Students "
     else:
         filterDesc = "Class " + filter
     return render_template('board.html', teams=teams, desc=filterDesc)
