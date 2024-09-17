@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Leaderboard</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            a {color:#666688;}
+        </style>
+    </head>
+<body>
+    <h1>Add Team Page</h1>
+    <form>
+        
+        <label for="teamName">Team Name: </label><br>
+        <input type="text" id="teamName" name="name" value="team awesome"><br><br>
+        <label for="teamNumber">Team Number: </label><br>
+        <input type="number" id="teamNumber" name="name" value="team awesome"><br><br>
+        <label for="teamClass">Team Class: </label><br>
+        <input type="text" id="teamClass" name="name" value="3W"><br><br>
+
+        <label for="teamMembers">Members: (seperated by commas)</label><br>
+        <input type="text" id="teamMembers" name="members" value="bob,sarah"><br><br>
+
+        <label for="password">Password</label><br>
+        <input type="password" id="password" ><br><br>
+
+       
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <script type="text/javascript">
+    function submitForm(){
+        var form = document.getElementById('teamForm');
+
+        // Extract form values
+        var teamName = document.getElementById('teamName').value;
+        var teamNumber = document.getElementById('teamNumber').value;
+        var members = document.getElementById('teamMembers').value.split(',');
+        var className = document.getElementById('teamClass').value.toUpperCase();
+        var password = document.getElementById('password').value;
+
+        // Validate form values
+        if (!teamName || !teamNumber || !className || !password || members.length === 0) {
+            alert('Please fill out all fields.');
+            return;
+        }
+        
+
+        // Create data object
+        var formData = {
+            name: teamName,
+            number: teamNumber,
+            members: members,
+            className: className,
+            pswd: password
+
+        };
+
+        // Send POST request with form data
+        fetch('/submitTeam', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+        // Check the status code
+        if (response.ok) {
+            // Status code in the range 200-299
+            sucessHandler(formData);
+        } else if (response.status === 409) {
+            alert("Error. Team already exists. (check team no)")
+        }
+        else if (response.status === 400) {
+            alert("Error. Form data is invalid")
+        }
+    
+        else if (response.status === 401) {
+            alert("Error. Incorrect password.")
+        }
+         else {
+            // Handle other status codes
+            alert("Unexpected error. Please try again")
+        }
+    })
+    }
+
+    function sucessHandler(data){
+        alert('Team added successfully');
+    }
+    </script>
+    
+</body>

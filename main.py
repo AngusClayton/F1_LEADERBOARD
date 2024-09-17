@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, Response
 import sqlite3
 import dbi
 
@@ -14,7 +14,7 @@ def get_db_connection():
 ##SET PASSWORD
 ## IF NO HTTPS; This should deffienetly be replaced by some rolling code like OAUTH 2FA
 def PSWD():
-	return 2365
+	return '2365'
 # ==================== DATABASE METHODS =================
 #preconditions: teamNo
 #postconditions: returns team data
@@ -86,7 +86,20 @@ def getClasses():
 
     return set(item['class'] for item in classes)
 
-# ============== API METHODS ============
+#preconditions: teamNo
+#postconditions: checks if team exists:
+def teamExists(teamNo):
+    conn, cursor = get_db_connection()
+    cursor.execute('''
+    SELECT COUNT(*)
+    FROM teams
+    WHERE id = ?
+    ''', (teamNo,))
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] > 0
+
+# ============== PAGE METHODS ============
 # create flask app
 app = Flask(__name__)
 
@@ -134,6 +147,51 @@ def moreInfo(teamNo):
     # render and return
     return render_template('moreInfo.html', number=str(teamNo), name=record['name'].title(), members=members, tclass=record['class'], fastest = getFastestTime(teamNo), chartLabels=str(labelList), chartTimes=str(timeList))
 
+### Edit All PAge
+@app.route('/addTeam')
+def admin():
+    return render_template('addTeam.html')
+
+
+##======== API METHODS
+@app.route('/submitTeam', methods=['POST'])
+def submitTeam():
+    # get form data
+    data = request.get_json()
+    print(data)
+    # check if team already exists:
+    if teamExists(data['number']):
+        return Response(status=409) # conflict status
+
+    # check password
+    if data['pswd'] != PSWD():
+        return Response(status=401)
+    
+    # clean up data
+    members = data['members']
+    members = [i.strip().title() for i in members]
+    members = ', '.join(members)
+    
+
+
+    # attempt to add team
+
+   #
+    try:
+        conn, cursor = get_db_connection()
+        # insert team
+        cursor.execute('INSERT INTO teams (id, name, members, class) VALUES (?, ?, ?, ?)', 
+                    (data['number'], data['name'].title().strip(), members, data['className'].strip().upper()))
+        
+        conn.commit() # save to db
+
+    except Exception as e:
+        print("Exception whilst inserting team into DB")
+        print(e)
+        return Response(status=500)
+    
+    return Response(status=200)
+
 
 if __name__ == '__main__':
-    app.run(host='localhost',port='8000')
+    app.run(host='localhost',port='8000',debug=True)
