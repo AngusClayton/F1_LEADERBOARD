@@ -13,26 +13,38 @@
 </style>
 </head>
 <body>
-<h1> {{ year }} Leaderboard</h1>
+<h1> {{ desc }} Leaderboard</h1>
   <table style='width:100%'>
-    <colgroup>
-      <col " width="10%">
-      <col width="10%">
-      <col  width="40%">
-      <col  width="20%">
-      <col  width="10%">
-    </colgroup>
-      
-      
-    <tr>
-      <th>#</th>
-      <th>Team No</th>
-      <th>Team Name</th>
-      <th>Time</th>
-      <th>Class</th>
-    </tr>
+    <thead>
+      <colgroup>
+        <col " width="10%">
+        <col width="10%">
+        <col  width="40%">
+        <col  width="20%">
+        <col  width="10%">
+      </colgroup>
+        
+        
+      <tr>
+        <th>#</th>
+        <th>Team No</th>
+        <th>Team Name</th>
+        <th>Time</th>
+        <th>Class</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for team in teams %}
+    <tr class="{{ 'first' if loop.index == 1 else 'second' if loop.index == 2 else 'third' if loop.index == 3 else '' }}">
+        <td>{{ loop.index }}</td>
+        <td>{{ team['team_id'] }}</td>
+        <td>{{ team['name'] }}</td>
+        <td>{{ team['fastest_time'] }}</td>
+        <td>{{ team['class'] }}</td>
+      </tr>
+    {% endfor %}
 
-    {{ tableContent | safe}}
+   
   </table>
 </body>
 </html>

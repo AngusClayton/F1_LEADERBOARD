@@ -1,21 +1,21 @@
 from flask import Flask, request, render_template
 import sqlite3
 import dbi
-# create db connection
 
+
+# create db connection
 def get_db_connection():
     conn = sqlite3.connect('test.db')
     conn.row_factory = sqlite3.Row  # Set row_factory to sqlite3.Row
     cursor = conn.cursor()
     return conn, cursor
 
-# create flask app
-app = Flask(__name__)
+
 ##SET PASSWORD
 ## IF NO HTTPS; This should deffienetly be replaced by some rolling code like OAUTH 2FA
 def PSWD():
 	return 2365
-
+# ==================== DATABASE METHODS =================
 #preconditions: teamNo
 #postconditions: returns team data
 def getTeam(teamNo):
@@ -50,14 +50,39 @@ def getFastestTime(teamNo):
         return 999
     return result['fastest_time']
 
+def getLeaderboard(filter):
+    # wild card, return whole DB
+    if filter == '*':
+        filter = ''
+    filter = f"%{filter}%"
+    conn, cursor = get_db_connection()
+    cursor.execute('''
+    SELECT t.team_id, te.name, te.class, MIN(t.time_record) AS fastest_time
+    FROM teams te
+    JOIN times t ON te.id = t.team_id
+    WHERE te.class LIKE ?
+    GROUP BY te.id, te.name
+    ORDER BY fastest_time;
+    ''', (filter,))
+    teams = cursor.fetchall()
+    conn.close()
+    return teams
+
+# ============== API METHODS ============
+# create flask app
+app = Flask(__name__)
 
 
-
-
-##Main list view
+## Main List View
 @app.route('/leaderboard/<filter>')
 def leaderboard(filter):
-    return render_template('board.html')
+    teams = getLeaderboard(filter)
+    filterDesc = None
+    if filter.isnumeric():
+        filterDesc = "Year " + filter
+    else:
+        filterDesc = "Class " + filter
+    return render_template('board.html', teams=teams, desc=filterDesc)
 
 ## Index page
 @app.route('/')
