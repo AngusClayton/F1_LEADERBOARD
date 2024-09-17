@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Leaderboard</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <style>
+            a {color:#666688;}
+        </style>
+    </head>
+<body>
+    <div style="float:right">
+    <img style="float:right;" src="{{ url_for('static', filename='img/1.png') }}" /><br>
+    <img style="float:right;" src="{{ url_for('static', filename='img/2.png') }}" /><br>
+    </div>
+    </style>
+    <div style="float:right">
+    <img style="float:right;" src="{{ url_for('static', filename='img/3.png') }}" /><br>
+    <img style="float:right;" src="{{ url_for('static', filename='img/4.png') }}" /><br>
+    </div>
+    
+    <h1> F1 in Schools <i>Practice</i> Leaderboard </h1>
+    {% for group in groups %}
+    <a href='/leaderboard/{{group}}'>  Year {{group}} Leaderboard </a><br>
+    {% endfor %}
+    <h2> Class Leaderboards: </h2>
+    {% for group in classes %}
+    <a href='/leaderboard/{{group}}'> {{group}} Leaderboard </a><br>
+    {% endfor %}
+    <h2> Admin: </h2>
+    <a href='/addTime'>  Add New Time Entry </a><br>
+    <a href='/addTeam'>  Add New Team </a><br>
+    <br>
+    <a href='/editTeam'>  Edit Team </a>
+   
+</body>
+</html>

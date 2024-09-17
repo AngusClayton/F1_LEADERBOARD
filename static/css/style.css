@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300&family=Exo:wght@300;800&display=swap');
+body{
+    background-color: #111111;
+    color: white;
+    font-family: 'Exo', sans-serif;
+    font-size:100%;
+}
+table {
+  border-collapse: collapse;
+  width:100%;
+  font-size:150%;
+  border-color: #6b6566;
+}
+
+th, td {
+  border-bottom: 1px solid #ddd;
+  padding:15px;
+  text-align: left;
+}
+
+.first{
+    color:#fcdb05;
+    background-color:#35311a;
+}
+.second{
+    color:#91c6c1;
+    background-color:#152322;
+}
+.third{
+    color:#cd7f32;
+    background-color:#261b10;
+}
+img {
+    width: 25vw;
+    height: auto;
+}

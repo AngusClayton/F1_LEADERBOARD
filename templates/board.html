@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Leaderboard</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+      a {
+        color: white; /* blue colors for links too */
+        text-decoration: underline; /* no underline */
+      }
+      .home-icon {
+            position: fixed; 
+            top: 10px;       /* Distance from the top */
+            right: 10px;     /* Distance from the right */
+           
+            z-index: 100;   /* Ensures it stays on top of other elements */
+            }
+            a:hover {
+                color: yellow;
+            }
+
+
+</style>
+</head>
+<body>
+  <a href="/" class="home-icon">
+    <i class="fas fa-home"></i>
+</a>
+<h1> {{ desc }} Leaderboard</h1>
+  <table style='width:100%'>
+    <thead>
+      <colgroup>
+        <col " width="10%">
+        <col width="10%">
+        <col  width="40%">
+        <col  width="20%">
+        <col  width="10%">
+      </colgroup>
+        
+        
+      <tr>
+        <th>#</th>
+        <th>Team No</th>
+        <th>Team Name</th>
+        <th>Time</th>
+        <th>Class</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for team in teams %}
+    <tr class="{{ 'first' if loop.index == 1 else 'second' if loop.index == 2 else 'third' if loop.index == 3 else '' }}">
+        <td>{{ loop.index }}</td>
+        <td>{{ team['id'] }}</td>
+        <td><a href="/team/{{ team['id'] }}">{{ team['name'] }}</a></td>
+        <td>{{ team['fastest_time'] }}</td>
+        <td>{{ team['class'] }}</td>
+      </tr>
+    {% endfor %}
+
+   
+  </table>
+</body>
+</html>

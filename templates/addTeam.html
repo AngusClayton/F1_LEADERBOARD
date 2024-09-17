@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Add Team | F1</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+        <style>
+            a {color:#666688;}
+            .home-icon {
+            position: fixed; 
+            top: 10px;       /* Distance from the top */
+            right: 10px;     /* Distance from the right */
+           
+            z-index: 100;   /* Ensures it stays on top of other elements */
+            }
+            a:hover {
+                color: #fff;
+            }
+        </style>
+    </head>
+<body>
+    <a href="/" class="home-icon">
+        <i class="fas fa-home"></i>
+    </a>
+    
+    <h1>Add Team Page</h1>
+    <form>
+        
+        <label for="teamName">Team Name: </label><br>
+        <input type="text" id="teamName" name="name" value="team awesome"><br><br>
+        <label for="teamNumber">Team Number: </label><br>
+        <input type="number" id="teamNumber" name="name" value="team awesome"><br><br>
+        <label for="teamClass">Team Class: </label><br>
+        <input type="text" id="teamClass" name="name" value="3W"><br><br>
+
+        <label for="teamMembers">Members: (seperated by commas)</label><br>
+        <input type="text" id="teamMembers" name="members" value="bob,sarah"><br><br>
+
+        <label for="password">Password</label><br>
+        <input type="password" id="password" ><br><br>
+
+       
+        <button type="button" onclick="submitForm()">Submit</button>
+    </form>
+
+    <script type="text/javascript">
+    function submitForm(){
+        var form = document.getElementById('teamForm');
+
+        // Extract form values
+        var teamName = document.getElementById('teamName').value;
+        var teamNumber = document.getElementById('teamNumber').value;
+        var members = document.getElementById('teamMembers').value.split(',');
+        var className = document.getElementById('teamClass').value.toUpperCase();
+        var password = document.getElementById('password').value;
+
+        // Validate form values
+        if (!teamName || !teamNumber || !className || !password || members.length === 0) {
+            alert('Please fill out all fields.');
+            return;
+        }
+        
+
+        // Create data object
+        var formData = {
+            name: teamName,
+            number: teamNumber,
+            members: members,
+            className: className,
+            pswd: password
+
+        };
+
+        // Send POST request with form data
+        fetch('/submitTeam', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+        // Check the status code
+        if (response.ok) {
+            // Status code in the range 200-299
+            alert('Team added successfully');
+        } else if (response.status === 409) {
+            alert("Error. Team already exists. (check team no)")
+        }
+        else if (response.status === 400) {
+            alert("Error. Form data is invalid")
+        }
+    
+        else if (response.status === 401) {
+            alert("Error. Incorrect password.")
+        }
+         else {
+            // Handle other status codes
+            alert("Unexpected error. Please try again")
+        }
+    })
+    }
+
+   
+    </script>
+    
+</body>

@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Edit Team {{team.id}} | F1</title>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+        <style>
+            a {color:#666688;}
+            input[type="text"] {
+                width: 100%;
+                padding: 12px 20px;
+                margin: 8px 0;
+                box-sizing: border-box;
+            }
+            td
+            {
+                border-left: rgb(162, 152, 152) solid;
+                border-Right: rgb(162, 152, 152) solid;
+            }
+            .container
+            {
+                overflow-x: auto;
+                width: 100%;
+            }
+            #timesTable td
+            {
+                border-top: rgb(162, 152, 152) solid;
+                border-bottom: rgb(162, 152, 152) solid;
+            }
+            .home-icon {
+            position: fixed; 
+            top: 10px;       /* Distance from the top */
+            right: 10px;     /* Distance from the right */
+           
+            z-index: 100;   /* Ensures it stays on top of other elements */
+            }
+            a:hover {
+                color: #fff;
+            }
+
+
+        </style>
+    </head>
+<body>
+    <a href="/" class="home-icon">
+        <i class="fas fa-home"></i>
+    </a>
+    <h1>Edit Team {{team.id}}:</h1>
+    <p>Click on fields to edit them. <br> To delete a time; delete the contents in the field so that it is blank.<br>Team Number / ID Cannot be changed.</p>
+    <h2>Edit Details</h2>
+    <table id="detailsTable">
+        <colgroup>
+            <col " width="10%">
+            
+            <col  width="40%">
+            <col  width="30%">
+            
+          </colgroup>
+        <tr >
+            <th>#</th>
+            <th>Team Name</th>
+            <th>Members</th>
+            <th>Class</th>
+            
+        </tr>
+        <tr contenteditable>
+            <td id="teamID">{{team.id}}</td>
+            <td id="teamName">{{team.name}}</td>
+            <td id="teamMembers">{{team.members}}</td>
+            <td id="teamClass">{{team.class}}</td>
+            
+        </tr>
+        
+    </table>
+    
+    <h2>Edit Times</h2>
+    <div class="container">
+    <table id="timesTable" contenteditable>
+       
+            {% for t in times %}
+            <td id="{{t['id']}}" >{{t['time_record']}}</td>
+            {% endfor %}
+
+            
+        </table>
+    </div>
+    <div style="margin-top: 1%;">
+    <label for="password">Password</label><br>
+    <input type="password" id="password" ><br><br>
+    <button type="button" onclick="submitChanges()" >Submit Changes</button>
+    </div>
+</body>
+<script>
+    function submitChanges()
+    {
+        var teamID = document.getElementById('teamID').textContent;
+        var teamName = document.getElementById('teamName').textContent;
+        var teamMembers = document.getElementById('teamMembers').textContent;
+        var teamClass = document.getElementById('teamClass').textContent;
+        var times = document.getElementById('timesTable').getElementsByTagName('td');
+        var password = document.getElementById('password').value;
+        var timeRecords = [];
+        for (var i = 0; i < times.length; i++)
+        {
+            timeRecords.push(times[i].textContent);
+        }
+        var data = {
+            'teamID': teamID,
+            'teamName': teamName,
+            'teamMembers': teamMembers,
+            'teamClass': teamClass,
+            'timeRecords': timeRecords,
+            'pswd':password
+        };
+        
+        //send request
+        fetch('/editTeam', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+        // Check the status code
+        if (response.ok) {
+            // Status code in the range 200-299
+            alert('Team added successfully');
+        } else if (response.status === 404) {
+            alert("Error. Team does not exist!")
+        }
+        else if (response.status === 400) {
+            alert("Error. Form data is invalid")
+        }
+    
+        else if (response.status === 401) {
+            alert("Error. Incorrect password.")
+        }
+         else {
+            // Handle other status codes
+            alert("Unexpected error. Please try again")
+        }
+    })
+
+    }
+</script>
+</html>
