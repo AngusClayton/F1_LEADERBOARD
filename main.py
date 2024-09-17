@@ -58,14 +58,16 @@ def getLeaderboard(filter):
     filter = f"%{filter}%"
     conn, cursor = get_db_connection()
     cursor.execute('''
-    SELECT t.team_id, te.name, te.class, MIN(t.time_record) AS fastest_time
+    SELECT te.id, te.name, te.class, MIN(t.time_record) AS fastest_time
     FROM teams te
-    JOIN times t ON te.id = t.team_id
+    LEFT JOIN times t ON te.id = t.team_id
     WHERE te.class LIKE ?
     GROUP BY te.id, te.name
-    ORDER BY fastest_time;
+    ORDER BY 
+    CASE WHEN MIN(t.time_record) IS NULL THEN 999 ELSE MIN(t.time_record) END;
     ''', (filter,))
     teams = cursor.fetchall()
+    # get teams with no time
     conn.close()
     return teams
 
