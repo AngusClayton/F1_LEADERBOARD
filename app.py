@@ -5,7 +5,7 @@ import traceback
 
 # create db connection
 def get_db_connection():
-    conn = sqlite3.connect('/var/www/F1_LEADERBOARD/test.db')
+    conn = sqlite3.connect('/var/www/F1_LEADERBOARD/test.db') #conn = sqlite3.connect('f1.db') #
     conn.row_factory = sqlite3.Row  # Set row_factory to sqlite3.Row
     cursor = conn.cursor()
     return conn, cursor
@@ -125,7 +125,7 @@ def index():
     classes = getClasses()
     groups = []
     for i in classes:
-        if i[0] not in groups:
+        if len(i) > 0 and (i[0] not in groups):
             groups.append(i[0])
     
     return render_template('index.html', classes=classes, groups=groups)
